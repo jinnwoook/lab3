@@ -53,11 +53,10 @@ class Cifar10Unlabeled(Dataset):
         image = read_image(image_path)  
 
         
-        if self.transform:
-            image_augmented = self.transform(image)
-
+        if self.transform is not None:
+            image = self.transform(image)
         
-        if self.target_transform:
+        if self.target_transform is not None:
             target = self.target_transform(image)
-
-        return image_augmented, target
+        
+        return image, target
