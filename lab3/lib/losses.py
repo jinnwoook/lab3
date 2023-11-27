@@ -24,7 +24,9 @@ def consistency_loss(outputs, targets, temperature=0.4, mask_prob=0.8):
     # -------------------------------------------------------------------------
     # Step 1: Build mask
     # -------------------------------------------------------------------------
-    # Fill this
+    softmax_probs = torch.softmax(outputs,dim=-1)
+    max_probs, _ =torch.max(softmax_probs,dim =-1)
+    mask = max_probs
     mask = mask.ge(mask_prob).float().detach()
 
     # -------------------------------------------------------------------------
