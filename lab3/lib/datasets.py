@@ -41,7 +41,7 @@ class Cifar10Labeled(Dataset):
 class Cifar10Unlabeled(Dataset):
     def __init__(self, root, path, transform=None, target_transform=None):
         self.root = root
-        self.data = load_json(path)
+        self.data = load_json(path)  
         self.transform = transform
         self.target_transform = target_transform
 
@@ -50,8 +50,14 @@ class Cifar10Unlabeled(Dataset):
 
     def __getitem__(self, index):
         image_path = f'{self.root}/{self.data[index]["image"]}'
-        target = read_image(image_path)
+        image = read_image(image_path)  
 
-        # Fill this
+        
+        if self.transform:
+            image_augmented = self.transform(image)
 
-        return image, target
+        
+        if self.target_transform:
+            target = self.target_transform(image)
+
+        return image_augmented, target
