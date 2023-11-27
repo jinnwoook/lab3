@@ -32,7 +32,9 @@ def consistency_loss(outputs, targets, temperature=0.4, mask_prob=0.8):
     # -------------------------------------------------------------------------
     # Step 2: Minimize target's entropy
     # -------------------------------------------------------------------------
-    # Fill this
+    """ 이 코드는 step2에 대한 답안 코드로 step3에 해당 step에 관한 코드가 작성되어 있어 생략 가능!
+    """
+    scaled_targets = torch.log_softmax(targets / temperature, dim=-1)
 
     # -------------------------------------------------------------------------
     # Step 3: Compute KL divergence 
@@ -44,7 +46,7 @@ def consistency_loss(outputs, targets, temperature=0.4, mask_prob=0.8):
     # -------------------------------------------------------------------------
     # Step 4: Mask out the low confident sample 
     # -------------------------------------------------------------------------
-    # Fill this
+    loss = loss * mask.unsqueeze(1)
 
     # -------------------------------------------------------------------------
     # Step 5: Compute the average loss  
