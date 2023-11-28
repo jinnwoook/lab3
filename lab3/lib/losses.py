@@ -24,29 +24,32 @@ def consistency_loss(outputs, targets, temperature=0.4, mask_prob=0.8):
     # -------------------------------------------------------------------------
     # Step 1: Build mask
     # -------------------------------------------------------------------------
-    softmax_probs = torch.softmax(outputs,dim=-1)
-    max_probs, _ =torch.max(softmax_probs,dim =-1)
-    mask = max_probs
-    mask = mask.ge(mask_prob).float().detach()
+    """
+    배치 크기 안에서 각 샘플에 대한 모든 클래스에 대한 확률이 softmax로 나오고, 각 샘플에서 클래스에 해당하는 확률이 0.8보다 크거나 같으면 1,작으면 0 으로 변환
+    ex) [0.8,0.2,0.3]-->[1,0,0] : 높은 확신 라벨로
+    """
+    mask = F.softmax(outputs,dim=-1)
+    mask = mask.ge(mask_prob).float().detach() # 이 mask는
 
     # -------------------------------------------------------------------------
     # Step 2: Minimize target's entropy
     # -------------------------------------------------------------------------
-    """ 이 코드는 step2에 대한 답안 코드로 step3에 해당 step에 관한 코드가 작성되어 있어 생략 가능!
-    """
-    targets = torch.log_softmax(targets / temperature, dim=-1)
+    scaled_targets = targets / temperature
 
     # -------------------------------------------------------------------------
     # Step 3: Compute KL divergence 
     # -------------------------------------------------------------------------
+    """
+    outputs,targets가 [batch,class]로 나오기 때문에 loss도 [batch,class]형태
+    """
     outputs = torch.log_softmax(outputs, dim=-1)
-    targets = torch.log_softmax(targets / temperature, dim=-1).detach()
+    targets = torch.log_softmax(scaled_targets, dim=-1).detach()
     loss = F.kl_div(outputs, targets, log_target=True, reduction='none')
 
     # -------------------------------------------------------------------------
     # Step 4: Mask out the low confident sample 
     # -------------------------------------------------------------------------
-    loss = loss * mask.unsqueeze(1)
+    loss = loss * mask
 
     # -------------------------------------------------------------------------
     # Step 5: Compute the average loss  
