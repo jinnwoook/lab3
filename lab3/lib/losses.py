@@ -41,15 +41,20 @@ def consistency_loss(outputs, targets, temperature=0.4, mask_prob=0.8):
     # -------------------------------------------------------------------------
     """
     outputs,targets가 [batch,class]로 나오기 때문에 loss도 [batch,class]형태
+    outputs는 변환하는 값(변형된 이미지에 대한 모델이 출력한 라벨)
+    targets 변하지 않는 값(원본이미지에 대한 모델이 출력한 라벨) -->고정해야하므로 학습업데이트 x: detach()사용
     """
     outputs = torch.log_softmax(outputs, dim=-1)
     targets = torch.log_softmax(scaled_targets, dim=-1).detach()
-    loss = F.kl_div(outputs, targets, log_target=True, reduction='none')
+    loss = F.kl_div(outputs, targets, log_target=True, reduction='none') # 하나의 샘플안에 각 클래스별 손실 값이 출력
 
     # -------------------------------------------------------------------------
     # Step 4: Mask out the low confident sample 
     # -------------------------------------------------------------------------
-    loss = loss * mask
+    """
+    하나의 샘플에서 확실한 클래스 확률을 곱해주면서 필요한 클래스의 손실만 가져오고 나머지는 0과 곱해져서 사라짐.
+    """
+    loss = loss * mask 
 
     # -------------------------------------------------------------------------
     # Step 5: Compute the average loss  
