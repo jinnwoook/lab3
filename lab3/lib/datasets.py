@@ -1,7 +1,7 @@
 from PIL import Image
 from torch.utils.data import Dataset
 from lib.utils import load_json
-
+import numpy as np
 
 CIFAR10_MEAN = (0.491, 0.482, 0.447)
 CIFAR10_STD = (0.247, 0.244, 0.262)
