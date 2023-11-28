@@ -87,3 +87,28 @@ class Cifar10UnlabeledFast(Dataset):
 
         
         return image, image_copy
+
+
+
+
+class Cifar10LabeledFast(Dataset):
+    def __init__(self, image_path, target_path, transform=None, target_transform=None):
+        self.images = np.load(image_path)
+        self.targets = np.load(target_path)
+        self.transform = transform
+        self.target_transform = target_transform
+
+    def __len__(self):
+        return self.images.shape[0]
+
+    def __getitem__(self, index):
+        image = Image.fromarray(self.images[index])
+        target = self.targets[index]
+
+        if self.transform is not None:
+            image = self.transform(image)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return image, target
